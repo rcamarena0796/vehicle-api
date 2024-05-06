@@ -20,7 +20,7 @@ import java.net.URI;
 //@Api(tags = "Vehicle API", value = "CRUD operations for vehicles")
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(value = "/vehicle")
+@RequestMapping(value = "/api/vehicle")
 public class VehicleController {
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -29,7 +29,7 @@ public class VehicleController {
 
     @Operation(description  = "Endpoint used to list vehicles in a paginated way filtered by brand, model or license plate")
     @GetMapping()
-    public Page<Vehicle> getEmployees(
+    public Page<Vehicle> getVehicles(
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String licensePlate,

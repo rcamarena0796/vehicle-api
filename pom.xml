@@ -17,6 +17,11 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<springdoc.openapi.version>1.6.9</springdoc.openapi.version>
+		<jacoco.plugin.version>0.8.5</jacoco.plugin.version>
+		<spotbugs-maven-plugin.version>4.2.0</spotbugs-maven-plugin.version>
+		<spotbugs.latest.version>4.2.2</spotbugs.latest.version>
+		<checkstyle-maven-plugin.version>3.1.2</checkstyle-maven-plugin.version>
+		<checkstyle.latest.version>8.41</checkstyle.latest.version>
 	</properties>
 
 	<dependencies>
@@ -62,16 +67,110 @@
 			<version>${springdoc.openapi.version}</version>
 		</dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.jetbrains</groupId>-->
-<!--            <artifactId>annotations</artifactId>-->
-<!--            <version>RELEASE</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
     </dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs-maven-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.spotbugs</groupId>
+						<artifactId>spotbugs</artifactId>
+						<version>${spotbugs.latest.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle-maven-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>${checkstyle.latest.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+					<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+					<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>false</failsOnError>
+					<failOnViolation>false</failOnViolation>
+					<linkXRef>false</linkXRef>
+					<violationSeverity>warning</violationSeverity>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+							<goal>prepare-agent-integration</goal>
+							<goal>report</goal>
+							<goal>report-integration</goal>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>com/unow/vehicle/config/**/*</exclude>
+								<exclude>com/unow/vehicle/exception/**/*</exclude>
+								<exclude>com/unow/vehicle/model/**/*</exclude>
+								<exclude>com/unow/vehicle/repository/**/*</exclude>
+								<exclude>com/unow/vehicle/VehicleApplication.class</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<rules>
+						<rule>
+							<element>BUNDLE</element>
+							<excludes>
+								<exclude>*Test</exclude>
+							</excludes>
+
+							<limits>
+								<limit>
+									<counter>INSTRUCTION</counter>
+									<value>COVEREDRATIO</value>
+									<minimum>90%</minimum>
+								</limit>
+							</limits>
+						</rule>
+					</rules>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
