@@ -112,8 +112,8 @@
 					<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
 					<encoding>UTF-8</encoding>
 					<consoleOutput>true</consoleOutput>
-					<failsOnError>false</failsOnError>
-					<failOnViolation>false</failOnViolation>
+					<failsOnError>true</failsOnError>
+					<failOnViolation>true</failOnViolation>
 					<linkXRef>false</linkXRef>
 					<violationSeverity>warning</violationSeverity>
 				</configuration>

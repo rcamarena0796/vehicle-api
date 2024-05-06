@@ -1,7 +1,11 @@
 package com.unow.vehicle.exception;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/** The Custom global exception handler. */
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -39,6 +44,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     return new ResponseEntity<>(body, headers, status);
   }
 
+  /**
+   * Handle database exception when the sort field does not exist.
+   *
+   * @param ex the Exception
+   * @param request the request
+   * @return the response entity
+   */
   @ExceptionHandler(PropertyReferenceException.class)
   public ResponseEntity<Object> handleDatabaseException(
       PropertyReferenceException ex, WebRequest request) {
@@ -48,6 +60,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * Handle database exception when there are constraint violations.
+   *
+   * @param ex the Exception
+   * @param request the request
+   * @return the response entity
+   */
   @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
   public ResponseEntity<Object> handleDatabaseException(
       SQLIntegrityConstraintViolationException ex, WebRequest request) {

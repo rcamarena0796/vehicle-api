@@ -13,6 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+/**
+ * The implementation of the Vehicle service interface.
+ */
 @Service
 public class VehicleServiceImpl implements VehicleService {
   private final VehicleRepository vehicleRepository;

@@ -4,6 +4,9 @@ import com.unow.vehicle.model.Vehicle;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 
+/**
+ * The interface Vehicle service.
+ */
 public interface VehicleService {
   Optional<Vehicle> findVehicleById(Long id);
 

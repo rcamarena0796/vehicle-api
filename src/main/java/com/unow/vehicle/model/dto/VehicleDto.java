@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Data;
 
+/** The Vehicle data transfer object class. */
 @Data
 public class VehicleDto {
 

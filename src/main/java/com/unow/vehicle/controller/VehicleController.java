@@ -11,9 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-
+/** The Vehicle controller. */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/api/vehicle")
@@ -22,9 +31,21 @@ public class VehicleController {
 
   @Autowired VehicleService vehicleService;
 
+  /**
+   * Gets vehicles by brand, model or license plate.
+   *
+   * @param brand the Vehicle brand
+   * @param model the Vehicle model
+   * @param licensePlate the Vehicle license plate
+   * @param page the number of the page to be returned
+   * @param size the size of each page
+   * @param sortBy the parameter used to sort the results
+   * @return the vehicles paginated
+   */
   @Operation(
       description =
-          "Endpoint used to list vehicles in a paginated way filtered by brand, model or license plate")
+          "Endpoint used to list vehicles in a paginated way filtered by brand"
+              + ", model or license plate")
   @GetMapping()
   public Page<Vehicle> getVehicles(
       @RequestParam(required = false) String brand,
@@ -37,6 +58,12 @@ public class VehicleController {
     return vehicleService.findVehicles(brand, model, licensePlate, page, size, sortBy);
   }
 
+  /**
+   * Creates a vehicle.
+   *
+   * @param vehicleDto the vehicle dto
+   * @return the created vehicle
+   */
   @Operation(description = "Endpoint used to create a vehicle")
   @PostMapping()
   public ResponseEntity<Vehicle> createVehicle(@Valid @RequestBody VehicleDto vehicleDto) {
@@ -46,6 +73,13 @@ public class VehicleController {
         .body(vehicle);
   }
 
+  /**
+   * Updates a vehicle.
+   *
+   * @param id the Vehicle id
+   * @param vehicleDetails the vehicle details
+   * @return the response entity
+   */
   @Operation(description = "Endpoint used to update a vehicle")
   @PutMapping("/{id}")
   public ResponseEntity<Vehicle> updateVehicle(
@@ -69,6 +103,12 @@ public class VehicleController {
         .body(vehicle);
   }
 
+  /**
+   * Deletes a vehicle.
+   *
+   * @param id the Vehicle id
+   * @return the response entity
+   */
   @Operation(description = "Endpoint used to delete a vehicle")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteVehicle(@PathVariable Long id) {
