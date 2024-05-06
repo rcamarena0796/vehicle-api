@@ -21,6 +21,6 @@ public class VehicleDto {
   private String color;
 
   @NotBlank(message = "year is required")
-  @Pattern(regexp = "(^$|[0-9]{4})", message = "year must be valid")
+  @Pattern(regexp = "(^$|[0-9]{4})", message = "year must be valid (4 numbers)")
   private String year;
 }

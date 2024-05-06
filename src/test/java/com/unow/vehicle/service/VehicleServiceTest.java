@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class VehicleServiceTest {
 
     @MockBean
@@ -91,7 +93,7 @@ public class VehicleServiceTest {
 
         when(vehicleRepository.findAll(Mockito.<Specification<Vehicle>>any(), Mockito.any(Pageable.class))).thenReturn(vehiclePage);
 
-        Page<Vehicle> response = vehicleService.findVehicles(vehicle.getBrand(), vehicle.getModel(), vehicle.getLicensePlate(),0,10,"id");
+        Page<Vehicle> response = vehicleService.findVehicles(vehicle.getBrand(), vehicle.getModel(), vehicle.getLicensePlate(),0,10,"id",vehicle.getId().toString());
 
         assertEquals(response.get().count(), vehicleList.size());
 

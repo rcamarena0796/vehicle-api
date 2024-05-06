@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .page-number {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        .page-number:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Vehicle Management</h1>
+
+<!-- Vehicle Form -->
+<div id="vehicle-form">
+    <h2>Add Vehicle</h2>
+    <div class="form-group">
+        <label for="brand">Brand:</label>
+        <input type="text" id="brand" name="brand">
+    </div>
+    <div class="form-group">
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model">
+    </div>
+    <div class="form-group">
+        <label for="licensePlate">License Plate:</label>
+        <input type="text" id="licensePlate" name="licensePlate">
+    </div>
+    <div class="form-group">
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color">
+    </div>
+    <div class="form-group">
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year">
+    </div>
+    <input type="submit" value="Add Vehicle" onclick="addVehicle()">
+</div>
+
+<!-- Vehicle Listing -->
+<h2>Vehicle Listing</h2>
+<table id="vehicle-list">
+    <thead>
+    <tr>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>License Plate</th>
+        <th>Color</th>
+        <th>Year</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Vehicle rows will be added here dynamically -->
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="pagination" id="pagination">
+    <!-- Pagination buttons will be added here dynamically -->
+</div>
+
+<!-- Error Message Container -->
+<div id="error-message" style="color: red; display: none;"></div>
+
+<script>
+    // Placeholder for the API URL
+    const apiUrl = 'http://localhost:8080/api/vehicle';
+
+    // Function to fetch and display vehicles
+    function fetchVehicles(page = 1, size = 5) {
+        // Call the API to get the vehicles
+        fetch(`${apiUrl}?page=${page-1}&size=${size}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('vehicle-list').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = ''; // Clear the table body
+
+                // Add rows to the table with the vehicle data
+                data.content.forEach(vehicle => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).textContent = vehicle.brand;
+                    row.insertCell(1).textContent = vehicle.model;
+                    row.insertCell(2).textContent = vehicle.licensePlate;
+                    row.insertCell(3).textContent = vehicle.color;
+                    row.insertCell(4).textContent = vehicle.year;
+                    const actionsCell = row.insertCell(5);
+                    actionsCell.innerHTML = `<button onclick="editVehicle(${vehicle.id})">Edit</button>
+                                 <button onclick="deleteVehicle(${vehicle.id})">Delete</button>`;
+                });
+
+                // Handle pagination
+                const paginationDiv = document.getElementById('pagination');
+                paginationDiv.innerHTML = ''; // Clear existing pagination buttons
+
+                for (let i = 1; i <= data.totalPages; i++) {
+                    const pageNumber = document.createElement('span');
+                    pageNumber.className = 'page-number';
+                    pageNumber.textContent = i;
+                    pageNumber.onclick = () => fetchVehicles(i);
+                    paginationDiv.appendChild(pageNumber);
+                }
+            })
+            .catch(error => console.error('Error fetching vehicles:', error));
+    }
+
+    async function addVehicle() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const licensePlate = document.getElementById('licensePlate').value;
+        const color = document.getElementById('color').value;
+        const year = document.getElementById('year').value;
+
+        const vehicleData = { brand, model, licensePlate, color, year };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(vehicleData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'An error occurred while adding the vehicle.');
+            }
+
+            // If the response is OK, handle the success case
+            // ... (refresh the vehicle list, clear form, etc.)
+            document.getElementById('brand').value = '';
+            document.getElementById('model').value = '';
+            document.getElementById('licensePlate').value = '';
+            document.getElementById('color').value = '';
+            document.getElementById('year').value = '';
+
+            // Refresh the vehicle list
+            fetchVehicles();
+        } catch (error) {
+            // Display the error message to the user
+            displayError(error.message);
+        }
+    }
+
+    // Function to edit a vehicle
+    function populateEditForm(vehicle) {
+        document.getElementById('brand').value = vehicle.brand;
+        document.getElementById('model').value = vehicle.model;
+        document.getElementById('licensePlate').value = vehicle.licensePlate;
+        document.getElementById('color').value = vehicle.color;
+        document.getElementById('year').value = vehicle.year;
+
+        // Change the Add button to Update and set the onclick event to updateVehicle
+        const submitButton = document.querySelector("#vehicle-form input[type='submit']");
+        submitButton.value = 'Update Vehicle';
+        submitButton.onclick = () => updateVehicle(vehicle.id);
+
+        // Scroll to the form
+        document.getElementById('vehicle-form').scrollIntoView();
+    }
+
+    // Function to edit a vehicle
+    function editVehicle(vehicleId) {
+        fetch(`${apiUrl}?id=${vehicleId}`)
+            .then(response => response.json())
+            .then(data => {
+                populateEditForm(data.content[0]);
+            })
+            .catch(error => console.error('Error fetching vehicle details:', error));
+    }
+
+    // Function to update a vehicle
+    async function updateVehicle(vehicleId) {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const licensePlate = document.getElementById('licensePlate').value;
+        const color = document.getElementById('color').value;
+        const year = document.getElementById('year').value;
+
+        const vehicleData = { brand, model, licensePlate, color, year };
+
+        try {
+            const response = await fetch(`${apiUrl}/${vehicleId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(vehicleData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'An error occurred while adding the vehicle.');
+            }
+
+            // If the response is OK, handle the success case
+            // ... (refresh the vehicle list, clear form, etc.)
+            // Clear form fields and reset to Add Vehicle state
+            resetForm();
+            fetchVehicles();
+        } catch (error) {
+            // Display the error message to the user
+            displayError(error.message);
+        }
+    }
+
+    // Function to reset the form to its initial state
+    function resetForm() {
+        document.getElementById('brand').value = '';
+        document.getElementById('model').value = '';
+        document.getElementById('licensePlate').value = '';
+        document.getElementById('color').value = '';
+        document.getElementById('year').value = '';
+
+        const submitButton = document.querySelector("#vehicle-form input[type='submit']");
+        submitButton.value = 'Add Vehicle';
+        submitButton.onclick = addVehicle;
+    }
+
+    // Function to delete a vehicle
+    function deleteVehicle(vehicleId) {
+        fetch(`${apiUrl}/${vehicleId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Refresh the vehicle list
+                    fetchVehicles();
+                } else {
+                    throw new Error('Vehicle could not be deleted.');
+                }
+            })
+            .catch(error => console.error('Error deleting vehicle:', error));
+    }
+
+    function displayError(errorMessage, timeout = 2000) {
+        const errorContainer = document.getElementById('error-message');
+        errorContainer.textContent = errorMessage;
+        errorContainer.style.display = 'block'; // Make the error message visible
+
+        // Hide the error message after 'timeout' milliseconds
+        setTimeout(() => {
+            errorContainer.style.display = 'none';
+        }, timeout);
+    }
+
+    // Initial fetch of vehicles when the page loads
+    fetchVehicles();
+</script>
+
+</body>
+</html>

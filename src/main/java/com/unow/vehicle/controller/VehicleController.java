@@ -51,11 +51,12 @@ public class VehicleController {
       @RequestParam(required = false) String brand,
       @RequestParam(required = false) String model,
       @RequestParam(required = false) String licensePlate,
+      @RequestParam(required = false) String id,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy) {
 
-    return vehicleService.findVehicles(brand, model, licensePlate, page, size, sortBy);
+    return vehicleService.findVehicles(brand, model, licensePlate, page, size, sortBy, id);
   }
 
   /**

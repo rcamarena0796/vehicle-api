@@ -37,12 +37,13 @@ public class VehicleServiceImpl implements VehicleService {
 
   @Override
   public Page<Vehicle> findVehicles(
-      String brand, String model, String licencePlate, int page, int size, String sortBy) {
+      String brand, String model, String licencePlate, int page, int size,
+      String sortBy, String id) {
 
     Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
 
     Specification<Vehicle> spec =
-        VehicleSpecifications.withDynamicQuery(brand, model, licencePlate);
+        VehicleSpecifications.withDynamicQuery(brand, model, licencePlate, id);
     return vehicleRepository.findAll(spec, pageable);
   }
 

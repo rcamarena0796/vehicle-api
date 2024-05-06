@@ -12,8 +12,8 @@ public interface VehicleService {
 
   Vehicle createVehicle(Vehicle vehicle);
 
-  Page<Vehicle> findVehicles(
-      String brand, String model, String licencePlate, int page, int size, String sortBy);
+  Page<Vehicle> findVehicles(String brand, String model, String licencePlate, int page, int size,
+                             String sortBy, String id);
 
   void deleteVehicle(Long id);
 }

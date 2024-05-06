@@ -1,9 +1,21 @@
 package com.unow.vehicle.controller;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unow.vehicle.model.Vehicle;
+import com.unow.vehicle.repository.VehicleRepository;
 import com.unow.vehicle.service.VehicleService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +26,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class VehicleControllerTest {
 
@@ -37,6 +39,9 @@ public class VehicleControllerTest {
 
     @MockBean
     protected VehicleService service;
+
+    @MockBean
+    private VehicleRepository vehicleRepository;
 
     private static Vehicle vehicle;
 
@@ -60,13 +65,13 @@ public class VehicleControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Vehicle> vehiclePage = new PageImpl<>(vehicleList, pageRequest, vehicleList.size());
 
-        when(service.findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString())).thenReturn(vehiclePage);
-        this.mockMvc.perform(get("/api/vehicle?brand=Tesla&model=S&licensePlate=AAA"))
+        when(service.findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString(),anyString())).thenReturn(vehiclePage);
+        this.mockMvc.perform(get("/api/vehicle?brand=Tesla&model=S&licensePlate=AAA&id=1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(mapToJson(vehicleList))));
 
-        verify(service, times(1)).findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString());
+        verify(service, times(1)).findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString(),anyString());
     }
 
     @Test
@@ -74,13 +79,13 @@ public class VehicleControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<Vehicle> vehiclePage = new PageImpl<>(emptyVehicleList, pageRequest, emptyVehicleList.size());
 
-        when(service.findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString())).thenReturn(vehiclePage);
+        when(service.findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString(),anyString())).thenReturn(vehiclePage);
 
-        this.mockMvc.perform(get("/api/vehicle?brand=Tesla&model=S&licensePlate=AAA")).andDo(print())
+        this.mockMvc.perform(get("/api/vehicle?brand=Tesla&model=S&licensePlate=AAA&id=1")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(mapToJson(emptyVehicleList))));
 
-        verify(service, times(1)).findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString());
+        verify(service, times(1)).findVehicles(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString(),anyString());
     }
 
     @Test

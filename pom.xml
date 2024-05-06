@@ -67,6 +67,11 @@
 			<version>${springdoc.openapi.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
 	<build>
@@ -169,6 +174,21 @@
 							</limits>
 						</rule>
 					</rules>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.unow.vehicle.VehicleApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
