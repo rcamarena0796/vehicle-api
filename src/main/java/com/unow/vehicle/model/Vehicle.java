@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Column;
 
 @Data
 @Entity
@@ -17,7 +18,8 @@ public class Vehicle {
 
     private String model;
 
-    private String licencePlate;
+    @Column(unique = true, nullable = false)
+    private String licensePlate;
 
     private String color;
 
